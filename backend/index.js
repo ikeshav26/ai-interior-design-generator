@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import connectToMongodb from './src/config/connectDb.js';
 import userRoutes from './src/routes/user.routes.js';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 connectToMongodb();
@@ -10,6 +11,8 @@ connectToMongodb();
 dotenv.config();
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser())
 
 
 const PORT = process.env.PORT;
