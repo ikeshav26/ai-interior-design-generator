@@ -125,7 +125,9 @@ export const forgotPassword=async(req,res)=>{
             return res.status(404).json({ message: 'User not found' });
         }
 
-        const shortId=user._id.toString().slice(0, 6);
+        const randomOtp=Math.floor(100000 + Math.random() * 900000);
+        await user.updateOne({ otp: randomOtp });
+        user.save();
 
         const auth=nodemailer.createTransport({
             service: 'gmail',
@@ -141,7 +143,7 @@ export const forgotPassword=async(req,res)=>{
             from: process.env.EMAIL,
             to: email,
             subject: 'Password Reset',
-            text:"Your password reset otp :"+shortId
+            text:"Your password reset otp :"+randomOtp
         }
 
         await auth.sendMail(receiver, (error, info) => {
@@ -170,9 +172,9 @@ export const verifyOtp=async(req,res)=>{
         if(!user){
             return res.status(404).json({ message: 'User not found' });
         }
-        const shortId=user._id.toString().slice(0, 6);
+        const randomOtp=user.otp;
 
-        if(otp !== shortId){
+        if(otp !== randomOtp){
             return res.status(400).json({ message: 'Invalid OTP' });
         }else{
             const hashedPassword=await bcrypt.hash(newPassword, 10);

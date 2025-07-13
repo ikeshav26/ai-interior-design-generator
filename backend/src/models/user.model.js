@@ -21,6 +21,8 @@ const userSchema=new mongoose.Schema({
     },avatar:{
         type:String,
         default:"https://plus.unsplash.com/premium_photo-1732757787588-29df717691f4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8ZHVtbXklMjBhdmF0YXJ8ZW58MHx8MHx8fDA%3D"
+    },otp:{
+        type:String
     }
 },{
     timestamps:true
