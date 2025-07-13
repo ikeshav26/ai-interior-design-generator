@@ -2,6 +2,7 @@ import User from '../models/user.model.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import cloudinary from '../config/cloudinary.js';
+import nodemailer from 'nodemailer';
 
 export const Signup=async(req,res)=>{
     try{
@@ -85,6 +86,8 @@ export const Logout=async(req,res)=>{
 }
 
 
+
+
 export const changeAvatar=async(req,res)=>{
     try{
         const userId=req.user;
@@ -103,6 +106,80 @@ export const changeAvatar=async(req,res)=>{
         const user=await User.findByIdAndUpdate(userId, { avatar: response.secure_url }, { new: true });
 
         res.status(200).json({ message: 'Avatar updated successfully', user });
+    }catch(err){
+        console.error(err);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+}
+
+
+export const forgotPassword=async(req,res)=>{
+    try{
+        const {email}=req.body;
+        if(!email){
+            return res.status(400).json({ message: 'Email is required' });
+        }
+
+        const user=await User.findOne({email});
+        if(!user){
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const shortId=user._id.toString().slice(0, 6);
+
+        const auth=nodemailer.createTransport({
+            service: 'gmail',
+            secure: true,
+            port: 465,
+            auth: {
+                user: process.env.EMAIL,
+                pass: process.env.EMAIL_PASSWORD
+            }
+        });
+
+        const receiver={
+            from: process.env.EMAIL,
+            to: email,
+            subject: 'Password Reset',
+            text:"Your password reset otp :"+shortId
+        }
+
+        await auth.sendMail(receiver, (error, info) => {
+            if (error) {
+                return res.status(500).json({ message: 'Error sending email', error });
+            }
+            console.log('Email sent: ' + info.response);
+        });
+
+        res.status(200).json({ message: 'Otp sent to your mail' });
+    }catch(err){
+        console.error(err);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+}
+
+
+export const verifyOtp=async(req,res)=>{
+    try{
+        const {email,newPassword,otp}=req.body;
+        if(!otp){
+            return res.status(400).json({ message: 'OTP is required' });
+        }
+
+        const user=await User.findOne({ email });
+        if(!user){
+            return res.status(404).json({ message: 'User not found' });
+        }
+        const shortId=user._id.toString().slice(0, 6);
+
+        if(otp !== shortId){
+            return res.status(400).json({ message: 'Invalid OTP' });
+        }else{
+            const hashedPassword=await bcrypt.hash(newPassword, 10);
+            user.password=hashedPassword;
+            await user.save();
+        }
+        res.status(200).json({ message: 'OTP verified successfully', userId: user._id });
     }catch(err){
         console.error(err);
         res.status(500).json({ message: 'Internal Server Error' });
