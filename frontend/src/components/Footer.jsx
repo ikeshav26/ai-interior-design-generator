@@ -43,7 +43,7 @@ const Footer = () => {
   ]
 
   return (
-    <footer className="absolute bottom-0 w-full bg-neutral text-neutral-content border-t border-neutral-content/10 transition-colors duration-300">
+    <footer className=" bg-neutral text-neutral-content border-t border-neutral-content/10 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Main Footer Content */}
