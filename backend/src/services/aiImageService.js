@@ -99,25 +99,18 @@ export const generateInteriorDesign = async (prompt, roomType = 'living room') =
     const enhancedPrompt = `Modern ${roomType} interior design, ${prompt}, photorealistic, high quality, architectural photography, well-lit, contemporary furniture`;
 
     try {
-        // Try Pollinations first (completely free, no API key needed)
         console.log('Trying Pollinations AI...');
         const image = await generateImagePollinations(enhancedPrompt);
-        // Optionally upload to Cloudinary
-        // const uploadResponse = await uploadToCloudinary(image, enhancedPrompt);
         return image;
     } catch (error) {
         console.log('Pollinations failed, trying Hugging Face...');
         try {
             const image = await generateImageHuggingFace(enhancedPrompt);
-            // Optionally upload to Cloudinary
-            // const uploadResponse = await uploadToCloudinary(image, enhancedPrompt);
             return image;
         } catch (hfError) {
             console.log('Hugging Face failed, trying Stability AI...');
             try {
                 const image = await generateImageStability(enhancedPrompt);
-                // Optionally upload to Cloudinary
-                // const uploadResponse = await uploadToCloudinary(image, enhancedPrompt);
                 return image;
             } catch (stabilityError) {
                 throw new Error('All AI services failed');

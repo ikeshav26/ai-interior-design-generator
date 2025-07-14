@@ -5,7 +5,7 @@ import cloudinary from '../config/cloudinary.js';
 export const generateDesign = async (req, res) => {
   try {
     const { prompt, roomType } = req.body;
-    const userId = req.user; // From auth middleware
+    const userId = req.user; 
 
     if (!prompt) {
       return res.status(400).json({ message: "Prompt is required" });
@@ -13,10 +13,8 @@ export const generateDesign = async (req, res) => {
 
     console.log('Generating design for prompt:', prompt);
     
-    // Generate image using free AI service
     const imageBase64 = await generateInteriorDesign(prompt, roomType);
     
-    // Upload to Cloudinary
     console.log('Uploading to Cloudinary...');
     const cloudinaryResult = await uploadToCloudinary(imageBase64, prompt);
     
@@ -27,7 +25,7 @@ export const generateDesign = async (req, res) => {
       roomType: roomType || 'living room',
       imageUrl: cloudinaryResult.url,
       cloudinaryPublicId: cloudinaryResult.publicId,
-      aiService: 'pollinations' // Since it tries Pollinations first
+      aiService: 'pollinations' 
     });
 
     const savedDesign = await newDesign.save();
