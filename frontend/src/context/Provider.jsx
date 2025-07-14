@@ -11,17 +11,27 @@ const AppProvider = ({ children }) => {
   // Check for saved user on app load
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
-    const token = localStorage.getItem("token");
     
-    if (savedUser && token) {
+
+    
+    // Since we're using HTTP-only cookies, we just check if user data exists in localStorage
+    if (savedUser) {
       try {
-        const userData = JSON.parse(savedUser);
-        setuser(userData);
+        // If savedUser is just "true", convert it to boolean
+        if (savedUser === "true") {
+          console.log('Setting user to true'); // Debug log
+          setuser(true);
+        } else {
+          const userData = JSON.parse(savedUser);
+          console.log('Setting user to:', userData); // Debug log
+          setuser(userData);
+        }
       } catch (error) {
         console.error("Error parsing saved user data:", error);
         localStorage.removeItem("user");
-        localStorage.removeItem("token");
       }
+    } else {
+      console.log('No saved user found'); // Debug log
     }
   }, []);
 
@@ -45,8 +55,24 @@ const AppProvider = ({ children }) => {
   const logout = () => {
     setuser(false);
     localStorage.removeItem("user");
-    localStorage.removeItem("token");
     navigate('/');
+  };
+
+  // Login function to properly set user and save to localStorage
+  const login = (userData) => {
+    console.log('Login called with:', { userData }); // Debug log
+    
+    if (userData) {
+      localStorage.setItem("user", JSON.stringify(userData));
+      setuser(userData);
+    } else {
+      localStorage.setItem("user", "true");
+      setuser(true);
+    }
+    
+    console.log('localStorage after login:', {
+      user: localStorage.getItem("user")
+    }); // Debug log
   };
 
   const value = {
@@ -55,7 +81,8 @@ const AppProvider = ({ children }) => {
     theme,
     settheme,
     navigate,
-    logout
+    logout,
+    login
   };
 
   return (

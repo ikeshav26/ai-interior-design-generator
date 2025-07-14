@@ -8,7 +8,7 @@ import toast from 'react-hot-toast'
 
 
 const Signup = () => {
-  const { theme,navigate,setuser } = useContext(AppContext)
+  const { theme,navigate,setuser,login } = useContext(AppContext)
   const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({
     username: '',
@@ -26,7 +26,7 @@ const Signup = () => {
       ...prev,
       [name]: value
     }))
-    // Clear error when user starts typing
+    
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -73,8 +73,12 @@ const Signup = () => {
     const res=await axios.post(`${import.meta.env.VITE_BACKEND_URI}/api/user/signup`,formData,{
       withCredentials: true
     })
+    
+    console.log('Signup response:', res.data); 
+
+    login(res.data.newUser);
+    
     setFormData({ username: '', email: '', password: '' })
-    setuser(true) 
     toast.success('Account created successfully!')
     navigate('/')
 

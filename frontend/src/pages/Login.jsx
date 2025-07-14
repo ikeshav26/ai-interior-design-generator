@@ -15,7 +15,7 @@ const Login = () => {
   const [email, setemail] = useState("")
   const [password, setPassword] = useState("")
   const [otpEmail, setotpEmail] = useState("")
-  const {setuser,navigate}=useContext(AppContext)
+  const {setuser,navigate,login}=useContext(AppContext)
 
 
   const loginHandler=async(e)=>{
@@ -28,16 +28,26 @@ const Login = () => {
       const res=await axios.post(`${import.meta.env.VITE_BACKEND_URI}/api/user/login`, formdata, {
         withCredentials: true
       })
+      
+      console.log('Login response:', res.data); // Debug log
+      
       if(res.status === 200 || res.status === 201){
         setemail("")
         setPassword("")
-        setuser(res.data.user)
+        
+        // Use the login helper function for consistent authentication handling
+        login(res.data.user);
+        
         toast.success("Login successful")
         navigate('/')
       }
     }catch(error){
       console.error("Login error:", error)
-      toast.error("Login failed. Please try again.")
+      if (error.response && error.response.data) {
+        toast.error(error.response.data.message || "Login failed. Please try again.")
+      } else {
+        toast.error("Login failed. Please try again.")
+      }
     }
   }
 
