@@ -4,6 +4,7 @@ import cors from 'cors';
 import connectToMongodb from './src/config/connectDb.js';
 import userRoutes from './src/routes/user.routes.js';
 import cookieParser from 'cookie-parser';
+import designRoutes from './src/routes/Design.routes.js';
 
 const app = express();
 connectToMongodb();
@@ -24,6 +25,7 @@ app.get('/',(req,res)=>{
 })
 
 app.use('/api/user',userRoutes)
+app.use('/api/design',designRoutes)
 
 
 app.listen(PORT, () => {
