@@ -14,7 +14,7 @@ import Footer from './components/Footer'
 
 const App = () => {
   return (
-    <div className='bg-green-400'>
+    <div className=''>
       <Navbar/>
       <Routes>
         <Route path='/' element={<Home />} />
