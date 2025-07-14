@@ -17,7 +17,20 @@ import { Toaster } from 'react-hot-toast'
 
 
 const App = () => {
-  const {user}=useContext(AppContext)
+  const {user, isLoading}=useContext(AppContext)
+  
+  // Show loading spinner while authentication is being restored
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-base-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-base-content/70">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+  
   return (
     <div className=''>
       {useLocation().pathname !== '/login' && useLocation().pathname !== '/signup' && useLocation().pathname !== '/forgot-password' && (

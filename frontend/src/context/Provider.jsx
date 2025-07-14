@@ -6,6 +6,7 @@ const AppContext = createContext();
 const AppProvider = ({ children }) => {
   const [user, setuser] = useState(false);
   const [theme, settheme] = useState("dark");
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
   const navigate = useNavigate();
 
   // Check for saved user on app load
@@ -33,6 +34,9 @@ const AppProvider = ({ children }) => {
     } else {
       console.log('No saved user found'); // Debug log
     }
+    
+    // Set loading to false after checking authentication
+    setIsLoading(false);
   }, []);
 
   useEffect(() => {
@@ -82,7 +86,8 @@ const AppProvider = ({ children }) => {
     settheme,
     navigate,
     logout,
-    login
+    login,
+    isLoading
   };
 
   return (
