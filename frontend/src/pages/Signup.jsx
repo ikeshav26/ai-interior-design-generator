@@ -254,7 +254,7 @@ const Signup = () => {
                 to="/login" 
                 className="text-primary hover:text-primary/80 font-medium transition-colors duration-200"
               >
-                Sign in
+                Login
               </Link>
             </p>
           </div>

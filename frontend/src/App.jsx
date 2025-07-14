@@ -36,7 +36,10 @@ const App = () => {
       {useLocation().pathname !== '/login' && useLocation().pathname !== '/signup' && useLocation().pathname !== '/forgot-password' && (
         <Footer />
       )}
-      <Toaster/>
+      <Toaster
+      position='right-top'
+      reverseOrder={false}
+      />
     </div>
   )
 }
