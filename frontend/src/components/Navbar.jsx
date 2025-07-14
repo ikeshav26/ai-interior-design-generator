@@ -13,12 +13,14 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AppContext } from "../context/Provider";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isRotating, setIsRotating] = useState(false);
 
-  const { user, setuser, theme, settheme } = useContext(AppContext);
+  const { user, setuser, theme, settheme, logout, navigate } = useContext(AppContext);
 
   const toggleTheme = () => {
     settheme(theme === "dark" ? "light" : "dark");
@@ -32,6 +34,25 @@ const Navbar = () => {
     { name: "Explore", href: "/explore", icon: Images },
     { name: "About", href: "/about", icon: Palette },
   ];
+
+
+  const logoutHandler = async () => {
+    try {
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URI}/api/user/logout`, {
+        withCredentials: true,
+      });
+      
+      if (res.status === 200 || res.status === 201) {
+        setuser(false);
+        logout();
+        toast.success("Logged out successfully");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      logout();
+      toast.error("Logged out locally");
+    }
+  }
 
   return (
     <nav className="bg-base-100 text-base-content border-b border-base-300 sticky top-0 z-50 shadow-lg">
@@ -102,7 +123,7 @@ const Navbar = () => {
                   </li>
                   <li>
                     <button
-                      onClick={() => setuser(false)}
+                      onClick={logoutHandler}
                       className="flex items-center"
                     >
                       <LogOut className="h-4 w-4 mr-2" /> Logout
@@ -195,7 +216,7 @@ const Navbar = () => {
                   </Link>
                   <button
                     onClick={() => {
-                      setuser(false);
+                      logoutHandler()
                       setIsMenuOpen(false);
                     }}
                     className="w-full text-left flex items-center px-3 py-2 rounded-md text-base font-medium hover:bg-base-200 transition"

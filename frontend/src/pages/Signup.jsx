@@ -70,7 +70,9 @@ const Signup = () => {
     
     setIsLoading(true)
     try{
-    const res=await axios.post(`${import.meta.env.VITE_BACKEND_URI}/api/user/signup`,formData)
+    const res=await axios.post(`${import.meta.env.VITE_BACKEND_URI}/api/user/signup`,formData,{
+      withCredentials: true
+    })
     setFormData({ username: '', email: '', password: '' })
     setuser(true) 
     toast.success('Account created successfully!')
