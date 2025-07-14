@@ -54,7 +54,7 @@ const Login = () => {
       if(res.status === 200 || res.status === 201){
         setotpEmail("")
         toast.success("OTP sent to your email")
-        setActiveTab('login')
+        navigate('/forgot-password')
       }
     }catch(error){
       console.error("OTP error:", error)
