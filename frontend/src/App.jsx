@@ -10,6 +10,7 @@ import ForgotPassword from './pages/ForgotPassword'
 import CreateDesign from './pages/CreateDesign'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
+import About from './pages/About'
 
 
 const App = () => {
@@ -23,7 +24,8 @@ const App = () => {
         <Route path='/login' element={<Login />} />
         <Route path='/signup' element={<Signup />} />
         <Route path='/forgot-password' element={<ForgotPassword />} />
-        <Route path='/create-design' element={<CreateDesign />} />
+        <Route path='/generate' element={<CreateDesign />} />
+        <Route path='/about' element={<About />} />
       </Routes>
       <Footer/>
     </div>
