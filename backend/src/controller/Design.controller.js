@@ -105,3 +105,17 @@ export const deleteDesign = async (req, res) => {
     });
   }
 };
+
+
+export const allDeigns=async(req,res)=>{
+    try{
+        const designs = await Design.find().populate('userId', 'username email').sort({ createdAt: -1 });
+        res.json(designs);
+    }catch(error){
+        console.error('Error fetching all designs:', error);
+        res.status(500).json({ 
+            message: "Failed to fetch designs", 
+            error: error.message 
+        });
+    }
+}
