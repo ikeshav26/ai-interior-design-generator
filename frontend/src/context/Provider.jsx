@@ -1,10 +1,12 @@
 import { createContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const AppContext = createContext();
 
 const AppProvider = ({ children }) => {
   const [user, setuser] = useState(false);
   const [theme, settheme] = useState("dark");
+  const navigate=useNavigate();
 
   
   useEffect(() => {
@@ -30,6 +32,7 @@ const AppProvider = ({ children }) => {
     setuser,
     theme,
     settheme,
+    navigate
   };
 
   return (
