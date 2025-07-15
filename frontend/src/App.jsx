@@ -13,7 +13,7 @@ import Footer from './components/Footer'
 import About from './pages/About'
 import { useContext } from 'react'
 import { AppContext } from './context/Provider'
-import { Toaster } from 'react-hot-toast'
+import toast, { Toaster } from 'react-hot-toast'
 
 
 const App = () => {
@@ -29,6 +29,10 @@ const App = () => {
         </div>
       </div>
     )
+  }
+
+  if(!user && useLocation().pathname=='/generate' || useLocation().pathname=='/explore') {
+    toast.error('Please login to create designs')
   }
   
   return (

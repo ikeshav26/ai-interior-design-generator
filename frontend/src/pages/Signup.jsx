@@ -1,118 +1,148 @@
-import React, { useState, useContext } from 'react'
-import { Eye, EyeOff, ArrowLeft, Home, User, Mail, Lock, Sparkles, CheckCircle } from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { AppContext } from '../context/Provider'
-import axios from 'axios'
-import toast from 'react-hot-toast'
+import React, { useState, useContext } from "react";
+import {
+  Eye,
+  EyeOff,
+  ArrowLeft,
+  Home,
+  User,
+  Mail,
+  Lock,
+  Sparkles,
+  CheckCircle,
+} from "lucide-react";
+import { Link } from "react-router-dom";
+import { AppContext } from "../context/Provider";
+import axios from "axios";
+import toast from "react-hot-toast";
 
+// ✅ List of blocked disposable email domains
+const disposableDomains = [
+  "mailinator.com",
+  "tempmail.com",
+  "10minutemail.com",
+  "yopmail.com",
+  "guerrillamail.com",
+  "trashmail.com",
+  "fakeinbox.com",
+  "getnada.com",
+];
 
+const isDisposableEmail = (email) => {
+  const domain = email.split("@")[1]?.toLowerCase();
+  return disposableDomains.includes(domain);
+};
 
 const Signup = () => {
-  const { theme,navigate,setuser,login } = useContext(AppContext)
-  const [showPassword, setShowPassword] = useState(false)
+  const { theme, navigate, setuser, login } = useContext(AppContext);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: ''
-  })
-  const [errors, setErrors] = useState({})
-  const [isLoading, setIsLoading] = useState(false)
+    username: "",
+    email: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
-  const signupImage = 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?auto=format&fit=crop&w=1000&q=80'
+  const signupImage =
+    "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?auto=format&fit=crop&w=1000&q=80";
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target
-    setFormData(prev => ({
+    const { name, value } = e.target;
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
-    }))
-    
+      [name]: value,
+    }));
+
     if (errors[name]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: ''
-      }))
+        [name]: "",
+      }));
     }
-  }
+  };
 
   const validateForm = () => {
-    const newErrors = {}
-    
+    const newErrors = {};
+
     if (!formData.username.trim()) {
-      newErrors.username = 'Username is required'
+      newErrors.username = "Username is required";
     } else if (formData.username.length < 3) {
-      newErrors.username = 'Username must be at least 3 characters'
+      newErrors.username = "Username must be at least 3 characters";
     }
-    
+
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required'
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email'
+      newErrors.email = "Email is required";
+    } else if (
+      !/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(formData.email)
+    ) {
+      newErrors.email = "Please enter a valid email address";
+    } else if (isDisposableEmail(formData.email)) {
+      newErrors.email = "Disposable email addresses are not allowed";
     }
-    
+
     if (!formData.password) {
-      newErrors.password = 'Password is required'
+      newErrors.password = "Password is required";
     } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters'
+      newErrors.password = "Password must be at least 6 characters";
     }
-    
-    return newErrors
-  }
+
+    return newErrors;
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    const newErrors = validateForm()
-    
+    e.preventDefault();
+    const newErrors = validateForm();
+
     if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors)
-      return
+      setErrors(newErrors);
+      return;
     }
-    
-    setIsLoading(true)
-    try{
-    const res=await axios.post(`${import.meta.env.VITE_BACKEND_URI}/api/user/signup`,formData,{
-      withCredentials: true
-    })
-    
-    console.log('Signup response:', res.data); 
 
-    login(res.data.newUser);
-    
-    setFormData({ username: '', email: '', password: '' })
-    toast.success('Account created successfully!')
-    navigate('/')
+    setIsLoading(true);
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URI}/api/user/signup`,
+        formData,
+        {
+          withCredentials: true,
+        }
+      );
 
+      console.log("Signup response:", res.data);
+      login(res.data.newUser);
+      setFormData({ username: "", email: "", password: "" });
+      toast.success("Account created successfully!");
+      navigate("/");
     } catch (error) {
-      console.error('Signup error:', error)
+      console.error("Signup error:", error);
       if (error.response && error.response.data) {
-        const serverErrors = error.response.data.errors || {}
-        setErrors(prev => ({
+        const serverErrors = error.response.data.errors || {};
+        setErrors((prev) => ({
           ...prev,
-          ...serverErrors
-        }))
+          ...serverErrors,
+        }));
       }
-      toast.error('Failed to create account. Please try again.')
+      toast.error("Failed to create account. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const features = [
     "AI-powered design generation",
     "Unlimited design variations",
     "High-quality image exports",
-    "Personal design library"
-  ]
+    "Personal design library",
+  ];
 
   return (
     <div className="min-h-screen bg-base-100 flex">
       {/* Left Side - Form */}
       <div className="flex-1 flex flex-col justify-center px-6 py-12 lg:px-20">
-        {/* Back to Home Button */}
-        <div className="mb-8">
-          <Link 
-            to="/" 
-            className="inline-flex items-center text-base-content/70 hover:text-primary transition-colors duration-200 group"
+        <div className="">
+          <Link
+            to="/"
+            className="inline-flex items-center  text-base-content/70 hover:text-primary transition-colors duration-200 group"
           >
             <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform duration-200" />
             <Home className="h-4 w-4 mr-2" />
@@ -121,7 +151,6 @@ const Signup = () => {
         </div>
 
         <div className="max-w-md w-full mx-auto">
-          {/* Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-2xl mb-4">
               <Sparkles className="h-8 w-8 text-primary" />
@@ -132,13 +161,20 @@ const Signup = () => {
             <p className="text-base-content/70">
               Create your account and start designing beautiful spaces
             </p>
+            <p className="mt-2 text-sm text-warning">
+              ⚠️ Please use a valid, personal email address. If you use fake or
+              disposable emails, you won’t be able to recover your account if
+              you forget your password.
+            </p>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Username Field */}
+            {/* Username */}
             <div className="space-y-2">
-              <label htmlFor="username" className="block text-sm font-medium text-base-content">
+              <label
+                htmlFor="username"
+                className="block text-sm font-medium text-base-content"
+              >
                 Username
               </label>
               <div className="relative">
@@ -152,9 +188,9 @@ const Signup = () => {
                   value={formData.username}
                   onChange={handleInputChange}
                   className={`block w-full pl-10 pr-3 py-3 border ${
-                    errors.username 
-                      ? 'border-error focus:border-error' 
-                      : 'border-base-300 focus:border-primary'
+                    errors.username
+                      ? "border-error focus:border-error"
+                      : "border-base-300 focus:border-primary"
                   } rounded-xl bg-base-100 text-base-content placeholder-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors duration-200`}
                   placeholder="Enter your username"
                 />
@@ -164,9 +200,12 @@ const Signup = () => {
               )}
             </div>
 
-            {/* Email Field */}
+            {/* Email */}
             <div className="space-y-2">
-              <label htmlFor="email" className="block text-sm font-medium text-base-content">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-base-content"
+              >
                 Email Address
               </label>
               <div className="relative">
@@ -180,9 +219,9 @@ const Signup = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                   className={`block w-full pl-10 pr-3 py-3 border ${
-                    errors.email 
-                      ? 'border-error focus:border-error' 
-                      : 'border-base-300 focus:border-primary'
+                    errors.email
+                      ? "border-error focus:border-error"
+                      : "border-base-300 focus:border-primary"
                   } rounded-xl bg-base-100 text-base-content placeholder-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors duration-200`}
                   placeholder="Enter your email"
                 />
@@ -192,9 +231,12 @@ const Signup = () => {
               )}
             </div>
 
-            {/* Password Field */}
+            {/* Password */}
             <div className="space-y-2">
-              <label htmlFor="password" className="block text-sm font-medium text-base-content">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-base-content"
+              >
                 Password
               </label>
               <div className="relative">
@@ -208,9 +250,9 @@ const Signup = () => {
                   value={formData.password}
                   onChange={handleInputChange}
                   className={`block w-full pl-10 pr-12 py-3 border ${
-                    errors.password 
-                      ? 'border-error focus:border-error' 
-                      : 'border-base-300 focus:border-primary'
+                    errors.password
+                      ? "border-error focus:border-error"
+                      : "border-base-300 focus:border-primary"
                   } rounded-xl bg-base-100 text-base-content placeholder-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors duration-200`}
                   placeholder="Create a password"
                 />
@@ -231,7 +273,6 @@ const Signup = () => {
               )}
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading}
@@ -251,12 +292,11 @@ const Signup = () => {
             </button>
           </form>
 
-          {/* Sign In Link */}
           <div className="mt-6 text-center">
             <p className="text-base-content/70">
-              Already have an account?{' '}
-              <Link 
-                to="/login" 
+              Already have an account?{" "}
+              <Link
+                to="/login"
                 className="text-primary hover:text-primary/80 font-medium transition-colors duration-200"
               >
                 Login
@@ -266,15 +306,14 @@ const Signup = () => {
         </div>
       </div>
 
-      {/* Right Side - Image & Features */}
+      {/* Right Side Image */}
       <div className="hidden lg:flex lg:flex-1 relative">
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${signupImage})` }}
         >
           <div className="absolute inset-0 bg-gradient-to-br from-primary/80 to-secondary/80"></div>
         </div>
-        
         <div className="relative z-10 flex flex-col justify-center p-12 text-white">
           <div className="max-w-lg">
             <h2 className="text-4xl font-bold mb-6">
@@ -283,7 +322,6 @@ const Signup = () => {
             <p className="text-xl text-white/90 mb-8">
               Join thousands of users creating beautiful interiors with AI
             </p>
-            
             <div className="space-y-4">
               {features.map((feature, index) => (
                 <div key={index} className="flex items-center space-x-3">
@@ -292,17 +330,17 @@ const Signup = () => {
                 </div>
               ))}
             </div>
-            
             <div className="mt-8 p-4 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
               <p className="text-sm text-white/80">
-                💡 <strong>Pro Tip:</strong> Start with simple room descriptions like "modern living room" or "cozy bedroom" for best results!
+                💡 <strong>Pro Tip:</strong> Start with simple room descriptions
+                like "modern living room" or "cozy bedroom" for best results!
               </p>
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Signup
+export default Signup;
