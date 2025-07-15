@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post('/generate-design/prompt', UserAuth, generateDesign);
 router.get('/my-designs', UserAuth, getUserDesigns);
-router.delete('/:designId', UserAuth, deleteDesign);
+router.delete('/delete/:designId', UserAuth, deleteDesign);
 router.get('/explore',UserAuth,allDeigns);
 
 export default router;

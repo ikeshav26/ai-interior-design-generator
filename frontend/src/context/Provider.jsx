@@ -79,6 +79,17 @@ const AppProvider = ({ children }) => {
     }); // Debug log
   };
 
+  // Update user function to properly update user data
+  const updateUser = (updatedData) => {
+    console.log('Updating user with:', updatedData); // Debug log
+    
+    const newUserData = { ...user, ...updatedData };
+    setuser(newUserData);
+    localStorage.setItem("user", JSON.stringify(newUserData));
+    
+    console.log('User updated:', newUserData); // Debug log
+  };
+
   const value = {
     user,
     setuser,
@@ -87,6 +98,7 @@ const AppProvider = ({ children }) => {
     navigate,
     logout,
     login,
+    updateUser,
     isLoading
   };
 

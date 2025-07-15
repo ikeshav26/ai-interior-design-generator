@@ -35,6 +35,7 @@ const Navbar = () => {
     { name: "About", href: "/about", icon: Palette },
   ];
 
+  
 
   const logoutHandler = async () => {
     try {
@@ -111,7 +112,7 @@ const Navbar = () => {
                   tabIndex={0}
                   className="btn btn-ghost flex items-center gap-2"
                 >
-                  <img src='/dummy.jpeg' className="h-8 w-8 rounded-full"/>
+                  <img src={user.avatar} className="h-8 w-8 rounded-full"/>
                   Profile
                 </label>
                 <ul
@@ -211,7 +212,7 @@ const Navbar = () => {
                     to="/profile"
                     className="flex items-center px-3 py-2 gap-2 rounded-md text-base font-medium hover:bg-base-200 transition"
                   >
-                    <img src='/dummy.jpeg' className="h-8 w-8 rounded-full"/>
+                    <img src={user.avatar} className="h-8 w-8 rounded-full"/>
                     Profile
                   </Link>
                   <button
