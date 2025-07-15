@@ -233,13 +233,7 @@ const Profile = () => {
                 })}
               </p>
 
-              {/* Stats */}
-              <div className="grid grid-cols-1 gap-6">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">{stats.totalDesigns}</div>
-                  <div className="text-sm text-base-content/60">Designs</div>
-                </div>
-              </div>
+              
             </div>
           </div>
         </div>
