@@ -44,7 +44,7 @@ const App = () => {
         <Route path='/signup' element={<Signup />} />
         <Route path='/forgot-password' element={<ForgotPassword />} />
         <Route path='/generate' element={user?<CreateDesign />:<Navigate to='/'/>} />
-        <Route path='/about' element={user?<About />:<Navigate to='/'/>} />
+        <Route path='/about' element={<About />} />
       </Routes>
       {useLocation().pathname !== '/login' && useLocation().pathname !== '/signup' && useLocation().pathname !== '/forgot-password' && (
         <Footer />
