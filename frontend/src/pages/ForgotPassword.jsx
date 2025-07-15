@@ -11,17 +11,31 @@ const ForgotPassword = () => {
   const [email, setemail] = useState("")
   const [newPassword, setNewPassword] = useState("")
   const [otp, setOtp] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
   const {navigate}=useContext(AppContext)
 
   const forgotPasswordImage = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=80"
 
   const submitHandler=async(e)=>{
     e.preventDefault();
+    
+    if (!email || !newPassword || !otp) {
+      toast.error("Please fill in all fields")
+      return
+    }
+    
+    if (newPassword.length < 6) {
+      toast.error("Password must be at least 6 characters")
+      return
+    }
+    
     const formData={
       email,
       newPassword,
-      otp
+      otp: parseInt(otp)
     }
+    
+    setIsLoading(true)
     try{
       const res=await axios.post(`${import.meta.env.VITE_BACKEND_URI}/api/user/verify-otp`, formData, {
         withCredentials: true,
@@ -35,7 +49,13 @@ const ForgotPassword = () => {
       }
     }catch(error) {
       console.error("Error submitting form:", error)
-      toast.error("Failed to reset password")
+      if (error.response && error.response.data) {
+        toast.error(error.response.data.message || "Failed to reset password")
+      } else {
+        toast.error("Failed to reset password")
+      }
+    } finally {
+      setIsLoading(false)
     }
   }
   return (
@@ -138,10 +158,20 @@ const ForgotPassword = () => {
 
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-accent to-secondary hover:from-accent/90 hover:to-secondary/90 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg"
+              disabled={isLoading}
+              className="w-full bg-gradient-to-r from-accent to-secondary hover:from-accent/90 hover:to-secondary/90 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white py-3 px-4 rounded-xl font-medium transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg disabled:hover:scale-100 disabled:hover:shadow-none"
             >
               <div className="flex items-center justify-center">
-                <Send className="h-5 w-5 mr-2" /> Reset Password
+                {isLoading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-2"></div>
+                    Resetting Password...
+                  </>
+                ) : (
+                  <>
+                    <Send className="h-5 w-5 mr-2" /> Reset Password
+                  </>
+                )}
               </div>
             </button>
           </form>

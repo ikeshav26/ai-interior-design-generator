@@ -235,17 +235,18 @@ const Signup = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className={`w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg ${
-                isLoading ? 'opacity-70 cursor-not-allowed' : ''
-              }`}
+              className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white py-3 px-4 rounded-xl font-medium transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg disabled:hover:scale-100 disabled:hover:shadow-none"
             >
               {isLoading ? (
                 <div className="flex items-center justify-center">
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
+                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-2"></div>
                   Creating Account...
                 </div>
               ) : (
-                'Create Account'
+                <div className="flex items-center justify-center">
+                  <User className="h-5 w-5 mr-2" />
+                  Create Account
+                </div>
               )}
             </button>
           </form>

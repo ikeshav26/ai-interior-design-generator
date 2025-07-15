@@ -15,15 +15,25 @@ const Login = () => {
   const [email, setemail] = useState("")
   const [password, setPassword] = useState("")
   const [otpEmail, setotpEmail] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const [isOtpLoading, setIsOtpLoading] = useState(false)
   const {setuser,navigate,login}=useContext(AppContext)
 
 
   const loginHandler=async(e)=>{
     e.preventDefault();
+    
+    if (!email || !password) {
+      toast.error("Please fill in all fields")
+      return
+    }
+    
     const formdata={
       email,
       password
     }
+    
+    setIsLoading(true)
     try{
       const res=await axios.post(`${import.meta.env.VITE_BACKEND_URI}/api/user/login`, formdata, {
         withCredentials: true
@@ -48,15 +58,24 @@ const Login = () => {
       } else {
         toast.error("Login failed. Please try again.")
       }
+    } finally {
+      setIsLoading(false)
     }
   }
 
   const otpHandler=async(e)=>{
     e.preventDefault();
+    
+    if (!otpEmail) {
+      toast.error("Please enter your email")
+      return
+    }
+    
     const formdata={
       email:otpEmail
     }
     
+    setIsOtpLoading(true)
     try{
       const res=await axios.post(`${import.meta.env.VITE_BACKEND_URI}/api/user/forgot-password`, formdata, {
         withCredentials: true
@@ -69,6 +88,8 @@ const Login = () => {
     }catch(error){
       console.error("OTP error:", error)
       toast.error("Failed to send OTP. Please try again.")
+    } finally {
+      setIsOtpLoading(false)
     }
   }
 
@@ -145,7 +166,8 @@ const Login = () => {
                     id="email"
                     name="email"
                     type="email"
-                    className="block w-full pl-10 pr-3 py-3 border border-base-300 rounded-xl bg-base-100 text-base-content placeholder-base-content/40 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors duration-200"
+                    disabled={isLoading}
+                    className="block w-full pl-10 pr-3 py-3 border border-base-300 rounded-xl bg-base-100 text-base-content placeholder-base-content/40 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     placeholder="Enter your email"
                   />
                 </div>
@@ -166,7 +188,8 @@ const Login = () => {
                     id="password"
                     name="password"
                     type={showPassword ? "text" : "password"}
-                    className="block w-full pl-10 pr-12 py-3 border border-base-300 rounded-xl bg-base-100 text-base-content placeholder-base-content/40 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors duration-200"
+                    disabled={isLoading}
+                    className="block w-full pl-10 pr-12 py-3 border border-base-300 rounded-xl bg-base-100 text-base-content placeholder-base-content/40 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     placeholder="Enter your password"
                   />
                   <button
@@ -182,10 +205,20 @@ const Login = () => {
               {/* Submit */}
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg"
+                disabled={isLoading}
+                className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white py-3 px-4 rounded-xl font-medium transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg disabled:hover:scale-100 disabled:hover:shadow-none"
               >
                 <div className="flex items-center justify-center">
-                  <LogIn className="h-5 w-5 mr-2" /> Login
+                  {isLoading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-2"></div>
+                      Signing in...
+                    </>
+                  ) : (
+                    <>
+                      <LogIn className="h-5 w-5 mr-2" /> Login
+                    </>
+                  )}
                 </div>
               </button>
             </form>
@@ -218,7 +251,8 @@ const Login = () => {
                     id="forgot-email"
                     name="forgot-email"
                     type="email"
-                    className="block w-full pl-10 pr-3 py-3 border border-base-300 rounded-xl bg-base-100 text-base-content placeholder-base-content/40 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors duration-200"
+                    disabled={isOtpLoading}
+                    className="block w-full pl-10 pr-3 py-3 border border-base-300 rounded-xl bg-base-100 text-base-content placeholder-base-content/40 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     placeholder="Enter your email address"
                   />
                 </div>
@@ -226,10 +260,20 @@ const Login = () => {
 
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-secondary to-accent hover:from-secondary/90 hover:to-accent/90 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg"
+                disabled={isOtpLoading}
+                className="w-full bg-gradient-to-r from-secondary to-accent hover:from-secondary/90 hover:to-accent/90 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white py-3 px-4 rounded-xl font-medium transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg disabled:hover:scale-100 disabled:hover:shadow-none"
               >
                 <div className="flex items-center justify-center">
-                  <Send className="h-5 w-5 mr-2" /> Send OTP
+                  {isOtpLoading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-2"></div>
+                      Sending OTP...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="h-5 w-5 mr-2" /> Send OTP
+                    </>
+                  )}
                 </div>
               </button>
             </form>
