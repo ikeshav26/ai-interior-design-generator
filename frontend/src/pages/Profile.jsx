@@ -43,8 +43,16 @@ const Profile = () => {
         console.log("fetched successfully")
       }
     } catch (error) {
-      console.error('Error fetching user designs:', error)
-      toast.error('Failed to load your designs')
+      if (error.response?.status === 401) {
+          toast.error('Unauthorized access. Please log in again.')
+          setuser(false)
+          localStorage.removeItem("user")
+          navigate('/')
+        } else if (error.response?.data?.message) {
+          toast.error(error.response.data.message)
+        } else {
+          toast.error('Failed to load your data. Please try again later.')
+        }
     } finally {
       setLoading(false)
     }
