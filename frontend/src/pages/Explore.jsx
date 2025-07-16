@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 import toast from 'react-hot-toast'
+import { AppContext } from '../context/Provider'
 
 const Explore = () => {
   const [data, setData] = useState([])
+  const {user,setuser,navigate}=useContext(AppContext)
 
   useEffect(() => {
     const getDesigns = async () => {
@@ -23,7 +25,17 @@ const Explore = () => {
         }
       } catch (error) {
         console.error('Error fetching designs:', error)
-        toast.error('Failed to load designs. Please try again later.')
+        
+        if (error.response?.status === 401) {
+          toast.error('Unauthorized access. Please log in again.')
+          setuser(false)
+          localStorage.removeItem("user")
+          navigate('/')
+        } else if (error.response?.data?.message) {
+          toast.error(error.response.data.message)
+        } else {
+          toast.error('Failed to load designs. Please try again later.')
+        }
       }
     }
 
