@@ -173,7 +173,7 @@ export const verifyOtp=async(req,res)=>{
         }
         const randomOtp=user.otp;
 
-        if(otp !== randomOtp){
+        if(otp != randomOtp){
             return res.status(400).json({ message: 'Invalid OTP' });
         }else{
             const hashedPassword=await bcrypt.hash(newPassword, 10);
