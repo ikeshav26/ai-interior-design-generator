@@ -112,52 +112,49 @@ export const changeAvatar=async(req,res)=>{
 }
 
 
-export const forgotPassword=async(req,res)=>{
-    try{
-        const {email}=req.body;
-        if(!email){
-            return res.status(400).json({ message: 'Email is required' });
-        }
-
-        const user=await User.findOne({email});
-        if(!user){
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        const randomOtp=Math.floor(100000 + Math.random() * 900000);
-        await user.updateOne({ otp: randomOtp });
-        user.save();
-
-        const auth=nodemailer.createTransport({
-            service: 'gmail',
-            secure: true,
-            port: 465,
-            auth: {
-                user: process.env.EMAIL,
-                pass: process.env.EMAIL_PASSWORD
-            }
-        });
-
-        const receiver={
-            from: process.env.EMAIL,
-            to: email,
-            subject: 'Password Reset',
-            text:"Your password reset otp :"+randomOtp
-        }
-
-        await auth.sendMail(receiver, (error, info) => {
-            if (error) {
-                return res.status(500).json({ message: 'Error sending email', error });
-            }
-            console.log('Email sent: ' + info.response);
-        });
-
-        res.status(200).json({ message: 'Otp sent to your mail' });
-    }catch(err){
-        console.error(err);
-        res.status(500).json({ message: 'Internal Server Error' });
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
     }
-}
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const randomOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.otp = randomOtp;
+    await user.save();
+
+    const auth = nodemailer.createTransport({
+      service: 'gmail',
+      secure: true,
+      port: 465,
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD
+      }
+    });
+
+    const receiver = {
+      from: process.env.EMAIL,
+      to: email,
+      subject: 'Password Reset',
+      text: "Your password reset otp :" + randomOtp
+    };
+
+    // Use async/await instead of callback to prevent double res.json call
+    await auth.sendMail(receiver);
+
+    res.status(200).json({ message: 'Otp sent to your mail' });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
 
 
 export const verifyOtp=async(req,res)=>{
